@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#06102A">
+<meta name="description" content="Orthosphere · protótipo navegável da jornada do médico ortopedista, do acionamento à recuperação. Dados fictícios.">
+<title>Orthosphere · Síntegra</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy1:#06102A;--navy2:#0E244C;--navy:#122B49;
+  --cyan:#009FE3;--cyan2:#7FD3F7;--white:#FFFFFF;--gray:#9D9D9C;
+  --glass:rgba(255,255,255,.08);--glass2:rgba(255,255,255,.05);--line:rgba(255,255,255,.18);--line2:rgba(255,255,255,.1);
+  --r:24px;--ease:cubic-bezier(.2,.7,.3,1);--t:220ms;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{min-height:100%;background:#06102A linear-gradient(160deg,#06102A 0%,#0E244C 100%) fixed}
+body{min-height:100vh;min-height:100dvh;font-family:'Outfit',system-ui,-apple-system,'Segoe UI',sans-serif;font-weight:300;color:var(--white);
+  -webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;overflow:hidden;
+  background:radial-gradient(70% 45% at 10% 0%,rgba(0,159,227,.18),transparent 70%),radial-gradient(60% 40% at 100% 100%,rgba(0,159,227,.08),transparent 70%)}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+button:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--cyan2);outline-offset:3px;border-radius:12px}
+svg text{font-family:inherit}
+b,strong{font-weight:600}
+h1{font-size:24px;font-weight:600;letter-spacing:-.01em;line-height:1.15}
+h2{font-size:17px;font-weight:600;letter-spacing:-.005em}
+h3{font-size:15px;font-weight:600}
+p{line-height:1.5}
+.small{font-size:13px}.xs{font-size:12px}.muted{color:var(--gray)}.cy{color:var(--cyan)}.cy2{color:var(--cyan2)}
+.lbl{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--cyan2);font-weight:400}
+.num{font-weight:600;font-size:26px;letter-spacing:-.02em;line-height:1}
+.row{display:flex;align-items:center;gap:10px}.between{justify-content:space-between}.wrap{flex-wrap:wrap}.col{display:flex;flex-direction:column;gap:4px}
+.grow{flex:1;min-width:0}
+.mt4{margin-top:4px}.mt8{margin-top:8px}.mt12{margin-top:12px}.mt16{margin-top:16px}.mt20{margin-top:20px}
+
+/* ---------- strip + frame ---------- */
+.strip{position:fixed;top:0;left:0;right:0;height:22px;z-index:80;display:flex;align-items:center;justify-content:center;
+  font-size:11px;letter-spacing:.06em;color:var(--gray);background:rgba(3,9,26,.65);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.stage{min-height:100vh;min-height:100dvh;display:flex;justify-content:center;align-items:stretch}
+.phone{position:relative;width:100%;max-width:480px;display:flex;flex-direction:column;overflow:hidden;padding-top:22px;height:100vh;height:100dvh}
+@media (min-width:600px){
+  .stage{align-items:center;padding:44px 16px 24px}
+  .phone{max-width:430px;height:min(900px,calc(100vh - 68px));border-radius:46px;border:1px solid var(--line);padding-top:12px;
+    box-shadow:0 50px 100px rgba(0,0,0,.55),0 0 0 10px rgba(255,255,255,.035),0 0 0 11px rgba(255,255,255,.08);background:rgba(6,16,42,.5)}
+}
+.top{padding:12px 20px 6px}
+.brand{font-weight:600;font-size:15px;letter-spacing:.01em;display:flex;align-items:baseline;gap:8px}
+.brand span{font-weight:300;font-size:12px;color:var(--gray)}
+.screen{flex:1;overflow-y:auto;overflow-x:hidden;padding:6px 16px 28px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.screen::-webkit-scrollbar{display:none}
+.view{display:flex;flex-direction:column;gap:14px}
+.view.anim{animation:in var(--t) var(--ease)}
+@keyframes in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.head{padding:6px 4px 2px}
+
+/* ---------- journey ---------- */
+.jr{position:relative;display:flex;list-style:none;margin-top:12px;padding:0 4px}
+.jr::before,.jr .fill{content:"";position:absolute;top:6px;left:calc(10% + 4px);height:1.5px;background:var(--line);right:calc(10% + 4px)}
+.jr .fill{right:auto;background:var(--cyan);transition:width .6s var(--ease)}
+.jr li{flex:1;display:flex;flex-direction:column;align-items:center;gap:7px;position:relative}
+.jr i{width:13px;height:13px;border-radius:50%;border:1.5px solid var(--line);background:#0B1D3F;transition:background .3s,border-color .3s,box-shadow .3s}
+.jr li.on i{background:var(--cyan);border-color:var(--cyan);box-shadow:0 0 0 4px rgba(0,159,227,.18)}
+.jr li.cur i{animation:pulse 1.8s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 4px rgba(0,159,227,.25)}70%{box-shadow:0 0 0 10px rgba(0,159,227,0)}100%{box-shadow:0 0 0 4px rgba(0,159,227,0)}}
+.jr span{font-size:9.5px;color:var(--gray);letter-spacing:.02em;white-space:nowrap}
+.jr li.on span{color:var(--cyan2)}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;border-top:1px solid var(--line2);background:rgba(6,16,42,.72);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);padding-bottom:env(safe-area-inset-bottom)}
+.tabs button{flex:1;min-height:60px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:10.5px;color:var(--gray);transition:color .2s,transform .15s}
+.tabs button:active{transform:scale(.95)}
+.tabs button[aria-current]{color:var(--cyan)}
+.tabs button[aria-current] .ic{filter:drop-shadow(0 0 6px rgba(0,159,227,.55))}
+
+/* ---------- surfaces ---------- */
+.card{background:var(--glass);border:1px solid var(--line);border-radius:var(--r);padding:18px;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.card.tight{padding:14px 16px}
+.card.hi{border-color:rgba(0,159,227,.5);background:rgba(0,159,227,.1)}
+.card.warn{border-color:rgba(255,196,120,.45);background:rgba(255,196,120,.08)}
+.sub{background:var(--glass2);border:1px solid var(--line2);border-radius:18px;padding:12px 14px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid var(--line);font-size:12px;color:var(--cyan2);white-space:nowrap}
+.chip.ok{background:rgba(0,159,227,.16);border-color:rgba(0,159,227,.5)}
+.chip.dim{color:var(--gray)}
+.chip.warn{color:#FFD9A8;border-color:rgba(255,196,120,.5);background:rgba(255,196,120,.1)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--cyan);box-shadow:0 0 8px rgba(0,159,227,.7);flex:none}
+.dot.off{background:var(--gray);box-shadow:none;opacity:.6}
+.badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--cyan2);padding:4px 9px;border-radius:999px;background:rgba(0,159,227,.14);border:1px solid rgba(0,159,227,.45)}
+.badge.ok{color:var(--navy1);background:var(--cyan);border-color:var(--cyan)}
+.badge.gray{color:var(--gray);background:transparent;border-color:var(--line)}
+.sep{height:1px;background:var(--line2);margin:14px 0}
+.list{display:flex;flex-direction:column}
+.item{display:flex;align-items:center;gap:12px;padding:11px 0;border-top:1px solid var(--line2);min-height:44px}
+.item:first-child{border-top:0;padding-top:4px}
+.item .t{font-size:14.5px}.item .s{font-size:12px;color:var(--gray);margin-top:2px}
+.ibox{width:36px;height:36px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.07);color:var(--cyan2);flex:none}
+.ibox.cy{background:rgba(0,159,227,.18);color:var(--cyan)}
+.ibox.ok{background:var(--cyan);color:var(--navy1)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat{background:var(--glass2);border:1px solid var(--line2);border-radius:16px;padding:12px 12px 10px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.stat b{font-size:17px;font-weight:600;letter-spacing:-.01em;white-space:nowrap}
+.stat .lbl{font-size:10px}
+
+/* ---------- buttons ---------- */
+.btn{min-height:48px;padding:0 18px;border-radius:16px;font-weight:600;font-size:15px;display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid transparent;
+  transition:transform .15s var(--ease),opacity .2s,background .2s,box-shadow .2s;width:100%}
+.btn:active{transform:scale(.98)}
+.btn.pri{background:var(--cyan);color:var(--navy1);box-shadow:0 10px 30px rgba(0,159,227,.25)}
+.btn.sec{background:var(--navy);color:var(--cyan2);border-color:var(--line)}
+.btn.ghost{background:transparent;color:var(--cyan2);border-color:var(--line2)}
+.btn.sm{min-height:44px;font-size:14px;padding:0 14px;width:auto}
+.btn[disabled]{opacity:.4;pointer-events:none}
+.btn.next{margin-top:6px}
+.btns{display:flex;gap:10px}
+.x{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--gray);margin-right:-10px}
+.x:active{background:rgba(255,255,255,.08)}
+
+/* ---------- notification ---------- */
+.notif{display:flex;gap:12px;align-items:center;padding:14px 14px 14px 16px;border-radius:20px;background:rgba(0,159,227,.14);border:1px solid rgba(0,159,227,.5);
+  animation:drop .55s var(--ease) both;animation-delay:.35s;box-shadow:0 14px 40px rgba(0,159,227,.15)}
+@keyframes drop{from{opacity:0;transform:translateY(-22px) scale(.97)}to{opacity:1;transform:none}}
+.notif .ibox{animation:ring 1.6s var(--ease) .9s 1}
+@keyframes ring{0%,100%{transform:rotate(0)}15%{transform:rotate(-14deg)}30%{transform:rotate(12deg)}45%{transform:rotate(-8deg)}60%{transform:rotate(6deg)}75%{transform:rotate(-3deg)}}
+.appear{animation:in .4s var(--ease) both}
+.d1{animation-delay:.55s}.d2{animation-delay:.7s}.d3{animation-delay:.85s}
+
+/* ---------- toggles / selection ---------- */
+.opt{display:flex;align-items:flex-start;gap:12px;padding:14px 0;border-top:1px solid var(--line2);width:100%;text-align:left;min-height:44px}
+.opt:first-child{border-top:0;padding-top:2px}
+.opt .ck{width:24px;height:24px;border-radius:8px;border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;flex:none;margin-top:2px;transition:background .2s,border-color .2s;color:var(--navy1)}
+.opt .ck svg{opacity:0;transform:scale(.6);transition:all .2s var(--ease)}
+.opt[aria-checked="true"] .ck{background:var(--cyan);border-color:var(--cyan)}
+.opt[aria-checked="true"] .ck svg{opacity:1;transform:none}
+.opt[disabled]{opacity:.6;pointer-events:none}
+.plate{display:flex;align-items:center;gap:12px;padding:12px;border-radius:18px;border:1px solid var(--line2);background:var(--glass2);width:100%;text-align:left;transition:border-color .2s,background .2s;position:relative}
+.plate+.plate{margin-top:8px}
+.plate .sz{width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:18px;background:rgba(255,255,255,.07);color:var(--cyan2);flex:none}
+.plate[aria-checked="true"]{border-color:var(--cyan);background:rgba(0,159,227,.12)}
+.plate[aria-checked="true"] .sz{background:var(--cyan);color:var(--navy1)}
+.plate .sug{position:absolute;top:-9px;right:12px;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--navy1);background:var(--cyan2);padding:3px 8px;border-radius:999px;font-weight:600}
+.segs{display:inline-flex;gap:4px;padding:4px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid var(--line2)}
+.segs button{min-width:44px;min-height:36px;border-radius:999px;font-size:13px;color:var(--gray);padding:0 10px;transition:all .2s}
+.segs button[aria-pressed="true"]{background:var(--cyan);color:var(--navy1);font-weight:600}
+
+/* ---------- range ---------- */
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:44px;background:transparent;margin:4px 0 2px}
+input[type=range]::-webkit-slider-runnable-track{height:4px;border-radius:2px;background:linear-gradient(90deg,var(--cyan) var(--p,53%),rgba(255,255,255,.18) var(--p,53%))}
+input[type=range]::-moz-range-track{height:4px;border-radius:2px;background:rgba(255,255,255,.18)}
+input[type=range]::-moz-range-progress{height:4px;border-radius:2px;background:var(--cyan)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;height:28px;border-radius:50%;background:#fff;border:6px solid var(--cyan);margin-top:-12px;box-shadow:0 4px 14px rgba(0,0,0,.35);cursor:pointer}
+input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:#fff;border:6px solid var(--cyan);box-shadow:0 4px 14px rgba(0,0,0,.35);cursor:pointer}
+.ticks{display:flex;justify-content:space-between;font-size:11px;color:var(--gray);padding:0 4px}
+
+/* ---------- limb ---------- */
+.limbwrap{display:flex;flex-direction:column;gap:10px}
+.limbwrap>.col{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px!important}
+.limb{padding:6px 0;display:flex;justify-content:center;align-items:center;border-radius:18px;background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.03))}
+.limb svg{width:100%;max-width:240px;height:auto;display:block;overflow:visible}
+.limbwrap .stat{padding:9px 8px 8px;justify-content:center;text-align:center;align-items:center}
+.limbwrap .stat b{font-size:14.5px!important}
+.limbwrap .stat b{font-size:16px}
+.axis{margin-top:10px;font-size:14px;line-height:1.45}
+.axis b{color:var(--cyan2);font-size:16px}
+.axis .st{display:inline-block;margin-left:6px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:999px;border:1px solid var(--line)}
+.axis .st.ok{color:var(--navy1);background:var(--cyan2);border-color:var(--cyan2);font-weight:600}
+.axis .st.no{color:#FFD9A8;border-color:rgba(255,196,120,.5)}
+
+/* ---------- timeline ---------- */
+.tl{display:flex;flex-direction:column}
+.tl .st{display:flex;gap:14px;align-items:flex-start;position:relative;padding:0 0 18px}
+.tl .st::before{content:"";position:absolute;left:11px;top:24px;bottom:0;width:1.5px;background:var(--line2)}
+.tl .st:last-child{padding-bottom:0}.tl .st:last-child::before{display:none}
+.tl .st.done::before{background:rgba(0,159,227,.6)}
+.tl .n{width:24px;height:24px;border-radius:50%;border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;flex:none;background:#0B1D3F;color:var(--navy1);transition:all .3s}
+.tl .done .n{background:var(--cyan);border-color:var(--cyan)}
+.tl .cur .n{border-color:var(--cyan);animation:pulse 1.6s infinite}
+.tl .cur .n::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--cyan)}
+.tl .t{font-size:14.5px;color:var(--gray)}
+.tl .done .t,.tl .cur .t{color:#fff}
+.tl .cur .t{font-weight:600}
+.tl .s{font-size:12px;color:var(--gray);margin-top:2px}
+.bar{height:6px;border-radius:3px;background:rgba(255,255,255,.12);overflow:hidden;margin-top:8px}
+.bar i{display:block;height:100%;width:0;background:var(--cyan);border-radius:3px;transition:width .25s linear}
+
+/* ---------- smart box ---------- */
+.boxes{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.bx{border:1px dashed var(--line);border-radius:18px;padding:12px;min-height:118px;display:flex;flex-direction:column;gap:6px}
+.bx.ret{border-color:rgba(0,159,227,.45)}
+.bx .lbl{font-size:10px;margin-bottom:2px}
+.pill{font-size:12px;padding:7px 10px;border-radius:12px;background:rgba(255,255,255,.08);border:1px solid var(--line2);animation:in .35s var(--ease) both;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pill.use{background:rgba(0,159,227,.18);border-color:rgba(0,159,227,.5);color:var(--cyan2)}
+.pill.miss{border-color:rgba(255,196,120,.6);color:#FFD9A8}
+.use-row{display:flex;align-items:center;gap:8px;min-height:44px;padding:8px 12px;border-radius:14px;background:var(--glass2);border:1px solid var(--line2);flex-wrap:wrap}
+.empty{font-size:12px;color:var(--gray);font-style:normal;opacity:.8}
+.log{font-size:12px;color:var(--gray);display:flex;flex-direction:column;gap:6px;max-height:150px;overflow:auto}
+.log div{display:flex;gap:10px;animation:in .3s var(--ease) both}
+.log time{color:var(--cyan2);flex:none;font-variant-numeric:tabular-nums}
+.alert{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:16px;background:rgba(255,196,120,.1);border:1px solid rgba(255,196,120,.5);animation:in .35s var(--ease) both}
+.alert .ibox{background:rgba(255,196,120,.15);color:#FFD9A8}
+
+/* ---------- counters / misc ---------- */
+.big{font-size:44px;font-weight:600;letter-spacing:-.03em;line-height:1;color:var(--cyan)}
+.saude{width:56px;height:56px;border-radius:50%;border:2px solid var(--cyan);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:14px;color:var(--cyan2);letter-spacing:-.01em;flex:none;box-shadow:0 0 0 6px rgba(0,159,227,.12)}
+.bubble{position:relative;padding:14px 16px;border-radius:20px 20px 20px 6px;background:rgba(0,159,227,.12);border:1px solid rgba(0,159,227,.4);font-size:14.5px;line-height:1.5}
+.ring{flex:none}
+.foot{display:flex;align-items:center;gap:14px;padding:4px 2px}
+.foot p{font-size:15px;line-height:1.4}
+.src{display:grid;grid-template-columns:1fr;gap:8px}
+.src div{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:14px;background:var(--glass2);border:1px solid var(--line2);font-size:14px;min-height:44px}
+.src .st{margin-left:auto;font-size:11px;color:var(--cyan2)}
+.skel i{display:block;height:12px;border-radius:6px;background:rgba(255,255,255,.1);margin:12px 0;animation:sh 1.2s infinite}
+@keyframes sh{0%,100%{opacity:.5}50%{opacity:1}}
+.laudo-text p{font-size:14px;line-height:1.55;margin:10px 0;color:rgba(255,255,255,.88)}
+.laudo-text p b{color:var(--cyan2)}
+.okmark{width:72px;height:72px;border-radius:50%;background:var(--cyan);color:var(--navy1);display:flex;align-items:center;justify-content:center;margin:12px auto 8px;animation:pop .45s var(--ease) both}
+@keyframes pop{from{transform:scale(.4);opacity:0}to{transform:none;opacity:1}}
+.kv{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-top:1px solid var(--line2);font-size:14px}
+.kv:first-child{border-top:0;padding-top:0}
+.kv span:last-child{font-weight:600;text-align:right}
+
+/* ---------- sheet + toast ---------- */
+#sheet{position:absolute;inset:0;z-index:50;pointer-events:none}
+#sheet.open{pointer-events:auto}
+.sheet-bg{position:absolute;inset:0;background:rgba(3,9,26,.6);opacity:0;transition:opacity .25s}
+.open .sheet-bg{opacity:1}
+.sheet-panel{position:absolute;left:0;right:0;bottom:0;background:#0C1E40;border:1px solid var(--line);border-bottom:0;border-radius:28px 28px 0 0;padding:10px 20px 30px;
+  transform:translateY(100%);transition:transform .28s var(--ease);max-height:84%;overflow:auto;box-shadow:0 -20px 60px rgba(0,0,0,.4)}
+@media (min-width:600px){.sheet-panel{border-radius:28px 28px 46px 46px;border-bottom:1px solid var(--line);padding-bottom:36px}}
+.open .sheet-panel{transform:none}
+.grab{width:40px;height:4px;border-radius:2px;background:var(--line);margin:0 auto 12px}
+.sh-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+#toast{position:absolute;left:16px;right:16px;bottom:78px;z-index:60;display:flex;justify-content:center;pointer-events:none}
+.toast{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:999px;background:#0C1E40;border:1px solid rgba(0,159,227,.5);color:#fff;font-size:14px;box-shadow:0 14px 40px rgba(0,0,0,.45);animation:toastin .3s var(--ease) both}
+.toast.out{animation:toastout .3s var(--ease) both}
+@keyframes toastin{from{opacity:0;transform:translateY(14px) scale(.96)}to{opacity:1;transform:none}}
+@keyframes toastout{to{opacity:0;transform:translateY(10px)}}
+
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<div class="strip" role="note">Protótipo · dados fictícios</div>
+<div class="stage">
+  <div class="phone" id="app">
+    <header class="top">
+      <div class="brand">Orthosphere <span>Síntegra · Grupo Jacto</span></div>
+      <ol class="jr" id="journey" aria-label="Jornada do paciente"></ol>
+    </header>
+    <main class="screen" id="screen" aria-live="polite"></main>
+    <nav class="tabs" id="tabs" aria-label="Navegação principal"></nav>
+    <div id="sheet"></div>
+    <div id="toast" role="status" aria-live="polite"></div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   Orthosphere · protótipo da visão do médico · dados fictícios
+   ============================================================ */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const fmt1 = n => n.toFixed(1).replace('.', ',');
+const fmtN = n => n.toLocaleString('pt-BR');
+const hm = m => `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`;
+
+/* ---------- ícones (traço fino, pontas redondas) ---------- */
+const ICONS = {
+  inbox: '<path d="M3 13l2.5-7h13L21 13v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/><path d="M3 13h5l1.5 2.5h5L16 13h5"/>',
+  user: '<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/>',
+  plan: '<path d="M5 19V5"/><path d="M5 19h14"/><path d="M5 11a8 8 0 0 1 8 8"/>',
+  cube: '<path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 12l8-4.5M12 12v9M12 12L4 7.5"/>',
+  trend: '<path d="M3 17l5-5 4 4 8-8"/><path d="M14 8h6v6"/>',
+  bell: '<path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20a2 2 0 0 0 4 0"/>',
+  check: '<path d="M5 12.5l4.5 4.5L19 7"/>',
+  chev: '<path d="M9 6l6 6-6 6"/>',
+  alert: '<path d="M12 4l9 16H3z"/><path d="M12 10v4M12 17.5v.5"/>',
+  file: '<path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/><path d="M10 13h5M10 17h5"/>',
+  arrow: '<path d="M4 12h16"/><path d="M13 5l7 7-7 7"/>',
+  fwd: '<path d="M14 5l6 5-6 5"/><path d="M20 10H9a5 5 0 0 0-5 5v4"/>',
+  box: '<path d="M3 8h18v12H3z"/><path d="M3 8l2-4h14l2 4"/><path d="M10 12h4"/>',
+  layers: '<path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/><path d="M3 17l9 5 9-5"/>',
+  shield: '<path d="M12 3l8 3v6c0 4.5-3.5 8-8 9-4.5-1-8-4.5-8-9V6z"/>',
+  truck: '<path d="M3 7h11v9H3z"/><path d="M14 10h4l3 3v3h-7"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/>',
+  clock: '<circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/>',
+  link: '<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1.5 1.5"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1.5-1.5"/>',
+  refresh: '<path d="M20 12a8 8 0 1 1-2.3-5.7"/><path d="M20 4v5h-5"/>',
+  close: '<path d="M6 6l12 12M18 6L6 18"/>',
+  play: '<path d="M8 5l11 7-11 7z"/>',
+  msg: '<path d="M4 5h16v11H9l-5 4z"/>',
+  steps: '<ellipse cx="9" cy="8" rx="3" ry="5"/><ellipse cx="15" cy="16" rx="3" ry="5"/>',
+  load: '<path d="M12 4v10M8 10l4 4 4-4"/><path d="M5 20h14"/>',
+  gauge: '<path d="M4 16a8 8 0 0 1 16 0"/><path d="M12 16l4-5"/>',
+  building: '<path d="M4 21V5h10v16"/><path d="M14 10h6v11"/><path d="M8 9h2M8 13h2M8 17h2"/>',
+  checkc: '<circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9.5"/>',
+  tag: '<path d="M3 12l9-9h9v9l-9 9z"/><circle cx="16" cy="8" r="1"/>',
+  watch: '<rect x="7" y="6" width="10" height="12" rx="3"/><path d="M9 6V3h6v3M9 18v3h6v-3"/>',
+  run: '<circle cx="16" cy="4" r="1.6"/><path d="M14.5 7.5l-3 5 3.5 2-1 5"/><path d="M14.5 7.5l3.5 1.5 2.5 2.5"/><path d="M11.5 12.5L8 15.5l-2.5 4.5"/><path d="M11.5 12.5L8 11"/>',
+  pill: '<rect x="3" y="9" width="18" height="6" rx="3" transform="rotate(-45 12 12)"/><path d="M9.5 9.5l5 5"/>',
+  cut: '<circle cx="6" cy="6" r="2.5"/><circle cx="6" cy="18" r="2.5"/><path d="M8 7.5L20 18M8 16.5L20 6"/>',
+  bone: '<path d="M4 20l6-6M14 10l6-6"/><circle cx="5" cy="19" r="1.5"/><circle cx="19" cy="5" r="1.5"/>',
+  scale: '<path d="M12 4v16"/><path d="M5 8h14"/><path d="M5 8l-2 6h4zM19 8l-2 6h4z"/>',
+  heart: '<path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"/>',
+  calendar: '<rect x="4" y="5" width="16" height="15" rx="3"/><path d="M4 10h16M8 3v4M16 3v4"/>',
+  spark: '<path d="M12 4l1.8 5.2L19 11l-5.2 1.8L12 18l-1.8-5.2L5 11l5.2-1.8z"/>',
+};
+const ico = (n, s = 22, sw = 2) => `<svg class="ic" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[n]}</svg>`;
+
+/* ---------- dados fictícios ---------- */
+const TABS = [
+  { id: 'casos', l: 'Casos', i: 'inbox' },
+  { id: 'paciente', l: 'Paciente', i: 'user' },
+  { id: 'plano', l: 'Planejamento', i: 'plan' },
+  { id: 'impressao', l: 'Impressão', i: 'cube' },
+  { id: 'posop', l: 'Pós-op', i: 'trend' },
+];
+const JOURNEY = ['Acionamento', 'Planejamento', 'Impressão', 'Cirurgia', 'Recuperação'];
+
+const EXAMS = [
+  { t: 'Raio-X panorâmico de membros inferiores', s: 'Recebido · 14/10' },
+  { t: 'Tomografia do joelho direito', s: 'Recebido · 15/10' },
+  { t: 'Ressonância do joelho direito', s: 'Recebido · 16/10' },
+];
+const COLLEAGUES = [
+  { n: 'Dra. Camila Reis', s: 'Cirurgia do joelho · disponível' },
+  { n: 'Dr. Bruno Tavares', s: 'Trauma ortopédico · em cirurgia' },
+  { n: 'Dra. Luiza Ferraz', s: 'Quadril e joelho · disponível' },
+];
+const LAUDOS = [
+  { id: 'rx', t: 'Raio-X panorâmico de membros inferiores', meta: 'Dr. Paulo Andrade · Radiologia · 14/10/2026',
+    text: ['<b>Técnica:</b> radiografia panorâmica de membros inferiores em ortostase, com carga bilateral.',
+      '<b>Achados:</b> desvio do eixo mecânico do membro inferior direito, passando medialmente ao centro do joelho (varo). Ângulo tibial proximal medial (MPTA) de 84°. Redução do espaço articular no compartimento medial do joelho direito. Membro inferior esquerdo sem alterações relevantes.',
+      '<b>Impressão:</b> genu varo à direita, de origem tibial, com sinais de sobrecarga do compartimento medial.'] },
+  { id: 'tc', t: 'Tomografia do joelho direito', meta: 'Dra. Marina Lopes · Radiologia · 15/10/2026',
+    text: ['<b>Técnica:</b> tomografia computadorizada do joelho direito, cortes finos, reconstruções multiplanares e volumétricas.',
+      '<b>Achados:</b> superfície articular tibial íntegra, sem traço de fratura. Esclerose subcondral no platô medial. Inclinação tibial posterior de 9°. Ausência de corpos livres.',
+      '<b>Impressão:</b> alterações degenerativas iniciais do compartimento medial. Anatomia compatível com osteotomia tibial alta de abertura medial. Volume exportado para o planejamento 3D.'] },
+  { id: 'rm', t: 'Ressonância do joelho direito', meta: 'Dr. Paulo Andrade · Radiologia · 16/10/2026',
+    text: ['<b>Técnica:</b> ressonância magnética do joelho direito, sequências T1, T2 e DP com saturação de gordura.',
+      '<b>Achados:</b> cartilagem do compartimento medial com afilamento difuso (grau III). Menisco medial com extrusão leve e degeneração da raiz posterior. Compartimento lateral preservado. Ligamentos cruzados e colaterais íntegros. Derrame articular discreto.',
+      '<b>Impressão:</b> condropatia medial grau III com compartimento lateral preservado, cenário favorável à cirurgia preservadora da articulação.'] },
+];
+const FWD_TARGETS = [
+  { id: 'anest', t: 'Anestesista', s: 'Dr. Tiago Lemos · avaliação pré-anestésica', i: 'user' },
+  { id: 'fisio', t: 'Fisioterapia', s: 'Equipe de reabilitação · plano pós-operatório', i: 'run' },
+  { id: 'outro', t: 'Outro especialista', s: 'Endocrinologia · controle glicêmico', i: 'fwd' },
+];
+const PLATES = [
+  { sz: 'P', code: 'STO-TP-01', len: '62 mm', screws: '4 parafusos bloqueados Ø 4,5 mm', range: 'correções até 5°' },
+  { sz: 'M', code: 'STO-TM-02', len: '78 mm', screws: '6 parafusos bloqueados Ø 5,0 mm', range: 'correções de 6° a 10°' },
+  { sz: 'G', code: 'STO-TG-03', len: '94 mm', screws: '8 parafusos bloqueados Ø 5,0 mm', range: 'correções acima de 10°' },
+];
+const PRINT_OPTS = [
+  { id: 'gabarito', t: 'Gabarito de corte e perfuração', s: 'Guia o ângulo planejado e desvia de artérias e nervos', m: 'Resina biocompatível · 1h50' },
+  { id: 'modelo', t: 'Modelo anatômico', s: 'Réplica em escala real para estudo e conversa com a paciente', m: 'Polímero · 3h10' },
+  { id: 'instrumental', t: 'Instrumental específico', s: 'Opcional · afastador adaptado à anatomia do caso', m: 'Sob demanda' },
+];
+const PRINT_STEPS = [
+  { t: 'Na fila', i: 'clock', m: 0 },
+  { t: 'Imprimindo', i: 'layers', m: 8 },
+  { t: 'Pós-processamento', i: 'cube', m: 253 },
+  { t: 'Esterilização', i: 'shield', m: 338 },
+  { t: 'A caminho do hospital', i: 'truck', m: 418 },
+  { t: 'Entregue no hospital', i: 'building', m: 453 },
+];
+const PRINT_BASE = 9 * 60 + 12;
+const BOX_ITEMS = ['Placa M · STO-TM-02', 'Parafusos Ø 5,0 (6)', 'Gabarito de corte', 'Afastador de tecidos'];
+const REC = {
+  2: { carga: 25, passos: 1150, dor: 6, msg: 'Carga parcial liberada. Dor controlada sem dipirona. Dado enviado ao seu médico.' },
+  6: { carga: 75, passos: 4820, dor: 2, msg: 'Evolução dentro do esperado. Dado enviado ao seu médico.' },
+  12: { carga: 100, passos: 9640, dor: 0, msg: 'Marco alcançado: corrida leve liberada. Dado enviado ao seu médico.' },
+};
+const PAIN = [7, 6, 5, 4, 3, 2, 2, 1, 1, 1, 0, 0];
+
+/* ---------- estado ---------- */
+const initial = () => ({
+  tab: 'casos', accepted: false, angle: 8, implant: null, implantConfirmed: false, simDone: false, simRunning: false,
+  print: { gabarito: true, modelo: true, instrumental: false }, printSent: false, printStep: -1, printProgress: 0,
+  box: { items: BOX_ITEMS.map(n => ({ n, st: 'esteril' })), log: [], running: false, done: false, missing: false, resolved: false },
+  surgery: false, postVisited: false, week: 6, forwarded: [], counted: false,
+});
+let S = initial();
+let timers = [];
+let lastTab = null;
+const later = (fn, ms) => { const id = setTimeout(fn, ms); timers.push(id); return id; };
+const stage = () => S.postVisited ? 4 : S.surgery ? 3 : S.printSent ? 2 : S.accepted ? 1 : 0;
+const caseStatus = () => S.postVisited ? 'Em recuperação' : S.surgery ? 'Operada' : S.printSent ? 'Material em produção' : S.accepted ? 'Em planejamento' : 'Novo caso';
+
+/* ---------- geometria do membro (esquemática) ---------- */
+/* k = exagero visual da rotação (desenho esquemático); as medidas usam o ângulo real */
+const G = { hip: { x: 100, y: 24 }, plat: { y: 152, x1: 74, x2: 126 }, hinge: { x: 122, y: 178 }, ankle0: { x: 74, y: 328 }, cut: { x: 78, y: 178 }, widthMM: 58, varus0: 6, k: 1.9 };
+function geo(a) {
+  const r = a * G.k * Math.PI / 180, c = Math.cos(r), s = Math.sin(r);
+  const rot = p => { const vx = p.x - G.hinge.x, vy = p.y - G.hinge.y; return { x: G.hinge.x + vx * c + vy * s, y: G.hinge.y - vx * s + vy * c }; };
+  const ankle = rot(G.ankle0);
+  const t = (G.plat.y - G.hip.y) / (ankle.y - G.hip.y);
+  const px = G.hip.x + (ankle.x - G.hip.x) * t;
+  const pct = (px - G.plat.x1) / (G.plat.x2 - G.plat.x1) * 100;
+  return { ankle, px, pct, wedge: rot(G.cut), open: G.widthMM * Math.tan(a * Math.PI / 180) };
+}
+const plateFor = a => a < 6 ? 'P' : a <= 10 ? 'M' : 'G';
+const finalTxt = a => { const f = a - G.varus0; return Math.abs(f) < 0.25 ? 'neutro' : `${fmt1(Math.abs(f))}° ${f > 0 ? 'valgo' : 'varo'}`; };
+const inTarget = p => p >= 60 && p <= 65;
+const axisText = p => `Eixo passa a <b>${Math.round(p)}%</b> do platô — alvo: 60–65% <span class="st ${inTarget(p) ? 'ok' : 'no'}">${inTarget(p) ? 'no alvo' : p < 60 ? 'abaixo' : 'acima'}</span>`;
+
+/* tíbia distal: pontos ao longo do eixo inclinado (deformidade em varo) */
+const TC0 = { x: 100, y: 178 }, TC1 = { x: 74, y: 326 };
+function tp(t, w) {
+  const dx = TC1.x - TC0.x, dy = TC1.y - TC0.y, L = Math.hypot(dx, dy), nx = dy / L, ny = -dx / L;
+  return `${(TC0.x + dx * t + w * nx).toFixed(1)} ${(TC0.y + dy * t + w * ny).toFixed(1)}`;
+}
+const FEMUR_D = 'M104 18C116 22 126 24 134 22C142 16 152 22 150 34C149 44 143 50 140 58L114 116C111 124 124 128 128 136C131 142 128 150 120 150C112 150 106 146 100 144C94 146 88 150 80 150C72 150 70 142 72 136C76 128 90 124 90 116L116 66C116 60 110 58 108 52C104 44 100 40 98 34Z';
+const TIBP_D = 'M72 154C82 151 92 153 97 154L100 150L103 154C108 153 118 151 128 154C131 160 127 168 122 172L122 178L78 178L78 172C73 168 69 160 72 154Z';
+const TIBD_D = () => `M78 178L122 178C122 184 ${tp(.12, 15)} ${tp(.2, 11)}L${tp(.78, 9)}C${tp(.86, 10)} ${tp(.93, 14)} ${tp(.99, 15)}L${tp(1, -6)}C${tp(1.04, -8)} ${tp(1.08, -12)} ${tp(1.06, -15)}C${tp(1, -17)} ${tp(.9, -14)} ${tp(.8, -10)}L${tp(.2, -11)}C${tp(.12, -15)} 78 184 78 178Z`;
+const FIB_D = () => `M128 166C136 165 138 172 134 179L${tp(.9, 22)}C${tp(.96, 24)} ${tp(1.05, 22)} ${tp(1.08, 17)}C${tp(1.02, 14)} ${tp(.95, 16)} ${tp(.9, 17)}L126 181C122 176 122 168 128 166Z`;
+const wedgeD = g => `M${G.hinge.x} ${G.hinge.y} L${G.cut.x} ${G.cut.y} L${g.wedge.x.toFixed(1)} ${g.wedge.y.toFixed(1)} Z`;
+const limbAria = (a, g) => `Modelo do membro inferior direito: fêmur, tíbia e fíbula, eixo mecânico, ponto de corte na tíbia e cunha de abertura de ${fmt1(a)} graus, eixo passando a ${Math.round(g.pct)} por cento do platô`;
+
+function limbSVG(a, plate = 0) {
+  const g = geo(a), f = n => n.toFixed(1);
+  return `<svg viewBox="0 0 200 356" role="img" aria-label="${limbAria(a, g)}">
+  <defs>
+    <linearGradient id="bn" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#76674f"/><stop offset=".2" stop-color="#cdbd9f"/><stop offset=".46" stop-color="#f7efdf"/><stop offset=".7" stop-color="#e0cfb2"/><stop offset="1" stop-color="#85745b"/>
+    </linearGradient>
+    <radialGradient id="bh" cx=".36" cy=".3" r=".8"><stop offset="0" stop-color="#fcf7ec"/><stop offset=".5" stop-color="#e4d5ba"/><stop offset="1" stop-color="#85745b"/></radialGradient>
+    <linearGradient id="ti" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#5d6d7e"/><stop offset=".45" stop-color="#dde6ee"/><stop offset="1" stop-color="#55657a"/></linearGradient>
+    <filter id="pores" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency=".8" numOctaves="2" seed="7" result="n"/>
+      <feColorMatrix in="n" type="matrix" values="0 0 0 0 .33  0 0 0 0 .26  0 0 0 0 .18  6.5 0 0 0 -4.1" result="sp"/>
+      <feComposite in="sp" in2="SourceGraphic" operator="in" result="s"/>
+      <feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="s"/></feMerge>
+    </filter>
+    <filter id="soft" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="5"/></filter>
+  </defs>
+  <ellipse cx="100" cy="180" rx="46" ry="150" fill="#000" opacity=".22" filter="url(#soft)"/>
+  <g stroke="#5c4f3e" stroke-width=".8" stroke-linejoin="round" filter="url(#pores)">
+    <path d="${FEMUR_D}" fill="url(#bn)"/>
+    <circle cx="100" cy="24" r="13" fill="url(#bh)"/>
+    <path d="${TIBP_D}" fill="url(#bn)"/>
+  </g>
+  <g id="tibD" transform="rotate(${f(-a * G.k)} ${G.hinge.x} ${G.hinge.y})">
+    <g stroke="#5c4f3e" stroke-width=".8" stroke-linejoin="round" filter="url(#pores)">
+      <path d="${FIB_D()}" fill="url(#bn)" opacity=".85"/>
+      <path d="${TIBD_D()}" fill="url(#bn)"/>
+    </g>
+  </g>
+  <path d="M74 152H126" stroke="#fff" stroke-opacity=".55" stroke-width="1.25"/>
+  <path d="M105.2 152H107.8" stroke="#009FE3" stroke-width="6" stroke-linecap="round" opacity=".75"/>
+  <path d="M78 178H122" stroke="#009FE3" stroke-width="1.5" stroke-dasharray="3 3"/>
+  <path id="wedge" d="${wedgeD(g)}" fill="#009FE3" fill-opacity=".45" stroke="#009FE3" stroke-width="1.5" stroke-linejoin="round"/>
+  <path id="axisL" d="M${G.hip.x} ${G.hip.y} L${f(g.ankle.x)} ${f(g.ankle.y)}" stroke="#7FD3F7" stroke-width="1.75" stroke-dasharray="4 5" stroke-linecap="round"/>
+  <g id="plateG" opacity="${f(plate)}" transform="translate(${f(-16 * (1 - plate))} 0)">
+    <g transform="translate(79 188) rotate(-12)">
+      <rect x="-5" y="-30" width="10" height="60" rx="5" fill="url(#ti)" stroke="#009FE3" stroke-width="1"/>
+      <g fill="#1d2a3a"><circle cy="-22" r="1.9"/><circle cy="-13" r="1.9"/><circle cy="13" r="1.9"/><circle cy="22" r="1.9"/></g>
+    </g>
+  </g>
+  <circle cx="${G.hinge.x}" cy="${G.hinge.y}" r="3.2" fill="#7FD3F7" stroke="#06102A" stroke-width="1"/>
+  <circle cx="${G.cut.x}" cy="${G.cut.y}" r="5" fill="#06102A" stroke="#009FE3" stroke-width="2.25"/>
+  <circle id="platDot" cx="${f(g.px)}" cy="${G.plat.y}" r="5" fill="#009FE3" stroke="#06102A" stroke-width="1.5"/>
+  <g font-size="10.5" fill="#9D9D9C">
+    <text x="82" y="28" text-anchor="end">Quadril</text>
+    <text x="66" y="156" text-anchor="end">Joelho</text>
+    <text x="22" y="352">medial</text>
+    <text x="178" y="352" text-anchor="end">lateral</text>
+    <text x="142" y="194">dobradiça</text>
+  </g>
+  <text id="pctTxt" x="134" y="156" font-size="13" font-weight="600" fill="#7FD3F7">${Math.round(g.pct)}%</text>
+  <text id="angTxt" x="56" y="${f(g.wedge.y + 10)}" font-size="14" font-weight="600" fill="#009FE3" text-anchor="end">${fmt1(a)}°</text>
+  </svg>`;
+}
+/* atualiza só os atributos que mudam (leve para o slider no celular) */
+function updateLimb(a, plate = 0) {
+  const svg = $('#limb svg'); if (!svg) return;
+  const g = geo(a), f = n => n.toFixed(1);
+  $('#tibD').setAttribute('transform', `rotate(${f(-a * G.k)} ${G.hinge.x} ${G.hinge.y})`);
+  $('#wedge').setAttribute('d', wedgeD(g));
+  $('#axisL').setAttribute('d', `M${G.hip.x} ${G.hip.y} L${f(g.ankle.x)} ${f(g.ankle.y)}`);
+  $('#platDot').setAttribute('cx', f(g.px));
+  $('#pctTxt').textContent = `${Math.round(g.pct)}%`;
+  const at = $('#angTxt'); at.textContent = `${fmt1(a)}°`; at.setAttribute('y', f(g.wedge.y + 10));
+  const pg = $('#plateG'); pg.setAttribute('opacity', f(plate)); pg.setAttribute('transform', `translate(${f(-16 * (1 - plate))} 0)`);
+  svg.setAttribute('aria-label', limbAria(a, g));
+}
+
+/* ---------- utilidades de UI ---------- */
+function toast(msg, icon = 'check') {
+  const t = $('#toast');
+  t.innerHTML = `<div class="toast"><span class="ibox ok" style="width:26px;height:26px;border-radius:50%">${ico(icon, 15, 2.5)}</span>${msg}</div>`;
+  later(() => { const el = $('.toast', t); if (el) el.classList.add('out'); }, 2300);
+  later(() => { if (!$('.toast:not(.out)', t)) t.innerHTML = ''; }, 2650);
+}
+function openSheet(html) {
+  const s = $('#sheet');
+  s.innerHTML = `<div class="sheet-bg" data-act="sheet-close"></div><div class="sheet-panel" role="dialog" aria-modal="true"><div class="grab"></div>${html}</div>`;
+  requestAnimationFrame(() => s.classList.add('open'));
+}
+function closeSheet() {
+  const s = $('#sheet'); s.classList.remove('open');
+  later(() => { if (!s.classList.contains('open')) s.innerHTML = ''; }, 300);
+}
+function countUp(el, to, ms = 900) {
+  const t0 = performance.now();
+  const tick = () => { const p = Math.min(1, (performance.now() - t0) / ms); const e = 1 - Math.pow(1 - p, 3); el.textContent = Math.round(to * e); if (p < 1) requestAnimationFrame(tick); };
+  tick();
+}
+const nextBtn = (label) => `<button class="btn pri next" data-act="next">${label} ${ico('chev', 18, 2.5)}</button>`;
+
+/* ---------- telas ---------- */
+const VIEWS = {
+  casos() {
+    const st = caseStatus();
+    return `
+    <div class="head row between"><h1>Casos</h1><span class="chip dim">${ico('calendar', 14)} Hoje, 20/10</span></div>
+    ${!S.accepted ? `<div class="notif" role="alert">
+      <div class="ibox cy">${ico('bell', 20)}</div>
+      <div class="grow"><div class="lbl">Novo caso</div><div style="font-size:14.5px;margin-top:2px">Dr. Rafael Moura, você foi acionado</div></div>
+    </div>` : ''}
+    <div class="card appear ${S.accepted ? '' : 'd1'}">
+      <div class="row between">
+        <span class="badge ${S.accepted ? 'ok' : ''}">${S.accepted ? ico('check', 12, 3) : ''}${st}</span>
+        <span class="xs muted">Prioridade: eletiva</span>
+      </div>
+      <h2 class="mt12" style="font-size:21px">Helena Souza, 67 anos</h2>
+      <p class="small muted mt4">Trauma: queda em casa · 12/10/2026</p>
+      <div class="sub mt12">
+        <div class="lbl">Diagnóstico preliminar</div>
+        <p class="mt4" style="font-size:15px">Deformidade em varo do joelho direito — indicação de osteotomia de tíbia (HTO)</p>
+      </div>
+      <div class="row wrap mt12" style="gap:8px">
+        <span class="chip">${ico('building', 14)} Hospital Parceiro · Unidade Norte</span>
+        <span class="chip">${ico('user', 14)} Encaminhado por Dr. Lucas Prado</span>
+      </div>
+      <div class="sep"></div>
+      <div class="lbl">Exames recebidos</div>
+      <div class="list mt8">
+        ${EXAMS.map(e => `<div class="item"><div class="ibox">${ico('file', 18)}</div><div class="grow"><div class="t">${e.t}</div><div class="s">${e.s}</div></div><span class="chip ok">${ico('check', 12, 3)} recebido</span></div>`).join('')}
+      </div>
+      ${!S.accepted ? `<div class="btns mt16">
+        <button class="btn pri" data-act="accept">Aceitar caso</button>
+        <button class="btn sec" data-act="forward-case">Encaminhar</button>
+      </div>` : `<div class="btns mt16"><button class="btn sec" data-act="forward-case">${ico('fwd', 18)} Encaminhar para colega</button></div>`}
+    </div>
+    ${S.surgery ? surgeryCard() : ''}
+    <div class="card tight appear ${S.accepted ? '' : 'd2'}">
+      <div class="lbl">Outros casos abertos</div>
+      <div class="row mt8" style="gap:12px"><div class="ibox">${ico('inbox', 18)}</div><p class="small muted">Nenhum outro caso aguardando você. Casos novos aparecem aqui com notificação.</p></div>
+    </div>
+    ${nextBtn('Próximo passo · Prontuário')}`;
+  },
+
+  paciente() {
+    const imc = (72 / (1.62 * 1.62));
+    return `
+    <div class="head row between"><div><h1>Helena Souza</h1><p class="small muted">67 anos · prontuário integrado</p></div><span class="badge">${caseStatus()}</span></div>
+    <div class="card warn tight row" style="gap:12px">
+      <div class="ibox" style="background:rgba(255,196,120,.15);color:#FFD9A8">${ico('alert', 20)}</div>
+      <div class="grow"><div class="lbl" style="color:#FFD9A8">Alergia</div><div style="font-size:16px;font-weight:600">Dipirona</div><div class="xs muted">Reação cutânea grave registrada em 2017</div></div>
+    </div>
+    <div class="card">
+      <div class="lbl">Histórico clínico</div>
+      <div class="grid2 mt12">
+        <div class="stat"><span class="lbl">Peso</span><b>72 kg</b></div>
+        <div class="stat"><span class="lbl">Altura</span><b>1,62 m</b></div>
+        <div class="stat"><span class="lbl">IMC calculado</span><b>${fmt1(imc)} <span class="xs muted" style="font-weight:300">sobrepeso</span></b></div>
+        <div class="stat"><span class="lbl">Pressão arterial</span><b>130/85</b></div>
+      </div>
+      <div class="list mt12">
+        <div class="item"><div class="ibox">${ico('heart', 18)}</div><div class="grow"><div class="t">Diabetes tipo 2 controlada</div><div class="s">HbA1c 6,8% · última medição 02/10</div></div></div>
+        <div class="item"><div class="ibox">${ico('cut', 18)}</div><div class="grow"><div class="t">Cirurgias anteriores</div><div class="s">Artroscopia do joelho direito · 2019</div></div></div>
+        <div class="item"><div class="ibox">${ico('pill', 18)}</div><div class="grow"><div class="t">Medicamentos em uso</div><div class="s">Metformina 850 mg 2x/dia · Losartana 50 mg · Sinvastatina 20 mg · Vitamina D</div></div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="row between"><div class="lbl">Laudos</div>${S.forwarded.length ? `<span class="xs cy2">${S.forwarded.length} encaminhamento${S.forwarded.length > 1 ? 's' : ''}</span>` : ''}</div>
+      <div class="list mt8">
+        ${LAUDOS.map(l => `<button class="item" data-act="laudo:${l.id}" style="width:100%;text-align:left"><div class="ibox cy">${ico('file', 18)}</div><div class="grow"><div class="t">${l.t}</div><div class="s">${l.meta}</div></div>${ico('chev', 18)}</button>`).join('')}
+      </div>
+      ${S.forwarded.length ? `<div class="row wrap mt8" style="gap:6px">${S.forwarded.map(f => `<span class="chip ok">${ico('check', 12, 3)} ${f}</span>`).join('')}</div>` : ''}
+      <button class="btn sec mt16" data-act="fwd-laudo">${ico('fwd', 18)} Encaminhar laudo</button>
+    </div>
+    <div class="card hi">
+      <div class="row" style="gap:8px"><span class="lbl">Cuidados específicos do caso</span><span class="xs muted">· gerado a partir do histórico</span></div>
+      <div class="list mt8">
+        <div class="item"><div class="ibox cy">${ico('alert', 18)}</div><div class="grow"><div class="t">Alergia a dipirona</div><div class="s">Usar analgesia alternativa; alerta em todas as prescrições</div></div></div>
+        <div class="item"><div class="ibox cy">${ico('gauge', 18)}</div><div class="grow"><div class="t">Controle glicêmico no pré-operatório</div><div class="s">Meta 100–180 mg/dL · suspender metformina 24 h antes</div></div></div>
+        <div class="item"><div class="ibox cy">${ico('shield', 18)}</div><div class="grow"><div class="t">Risco tromboembólico moderado</div><div class="s">Profilaxia mecânica + farmacológica a partir de 12 h de pós-op</div></div></div>
+      </div>
+    </div>
+    ${nextBtn('Próximo passo · Planejamento')}`;
+  },
+
+  plano() {
+    const g = geo(S.angle);
+    return `
+    <div class="head"><h1>Planejamento cirúrgico</h1><p class="small muted">Osteotomia tibial alta · abertura medial · joelho direito</p></div>
+    <div class="card">
+      <div class="limbwrap">
+        <div class="limb" id="limb">${limbSVG(S.angle, S.simDone ? 1 : 0)}</div>
+        <div class="col" style="gap:8px">
+          <div class="stat"><span class="lbl">Cunha</span><b id="mOpen">${fmt1(g.open)} mm</b></div>
+          <div class="stat"><span class="lbl">Eixo final</span><b id="mFinal">${finalTxt(S.angle)}</b></div>
+          <div class="stat"><span class="lbl">Placa</span><b id="mPlate">${plateFor(S.angle)}</b></div>
+          <div class="stat" style="border-color:rgba(0,159,227,.35)"><span class="lbl">Platô</span><b id="mPct">${Math.round(g.pct)}%</b></div>
+        </div>
+      </div>
+      <div class="sep"></div>
+      <div class="row between"><span class="lbl">Ângulo de correção</span><span class="num cy2" id="angVal">${fmt1(S.angle)}°</span></div>
+      <input type="range" id="angle" min="0" max="15" step="0.5" value="${S.angle}" style="--p:${S.angle / 15 * 100}%" aria-label="Ângulo de correção em graus" aria-valuetext="${fmt1(S.angle)} graus" ${S.simRunning ? 'disabled' : ''}>
+      <div class="ticks"><span>0°</span><span>5°</span><span>10°</span><span>15°</span></div>
+      <p class="axis" id="axisTxt">${axisText(g.pct)}</p>
+      <button class="btn sec mt16" data-act="simulate" ${S.simRunning ? 'disabled' : ''}>${ico(S.simDone ? 'refresh' : 'play', 18)} ${S.simDone ? 'Simular novamente' : 'Simular cirurgia'}</button>
+    </div>
+    <div class="card">
+      <div class="row between"><h2>Escolha do implante</h2>${S.implantConfirmed ? `<span class="badge ok">${ico('check', 12, 3)} no plano</span>` : ''}</div>
+      <p class="small muted mt4">Placa de Osteotomia de Tíbia Síntegra · titânio</p>
+      <div id="plates" class="mt16">${platesHTML()}</div>
+      ${S.implantConfirmed
+        ? `<div class="sub mt12 row" style="gap:10px"><div class="ibox ok" style="width:30px;height:30px;border-radius:10px">${ico('check', 16, 3)}</div><div><div style="font-size:14.5px">Implante especificado no plano</div><div class="xs muted">Placa ${S.implant} · ${PLATES.find(p => p.sz === S.implant).code} · parafusos compatíveis</div></div></div>`
+        : `<button class="btn pri mt16" data-act="confirm-implant" ${S.implant ? '' : 'disabled'}>Confirmar implante</button>`}
+    </div>
+    ${nextBtn('Próximo passo · Impressão 3D')}`;
+  },
+
+  impressao() {
+    const sent = S.printSent, b = S.box;
+    const kit = [
+      { t: `Placa ${S.implant || 'M'} · ${PLATES.find(p => p.sz === (S.implant || 'M')).code}`, s: 'titânio · do plano' },
+      { t: PLATES.find(p => p.sz === (S.implant || 'M')).screws, s: 'compatíveis com a placa' },
+      ...(S.print.gabarito ? [{ t: 'Gabarito de corte e perfuração', s: 'impresso para este caso' }] : []),
+      ...(S.print.instrumental ? [{ t: 'Instrumental específico', s: 'impresso para este caso' }] : []),
+    ];
+    return `
+    <div class="head"><h1>Impressão 3D</h1><p class="small muted">Produzido a partir do plano · Centro Síntegra</p></div>
+    <div class="card">
+      <div class="lbl">O que imprimir</div>
+      <div class="mt8">
+        ${PRINT_OPTS.map(o => `<button class="opt" role="checkbox" aria-checked="${S.print[o.id]}" data-act="toggle-print:${o.id}" ${sent ? 'disabled' : ''}>
+          <span class="ck">${ico('check', 14, 3.5)}</span>
+          <span class="grow"><span style="display:block;font-size:15px">${o.t}</span><span class="s" style="display:block;font-size:12.5px;color:var(--gray);margin-top:2px">${o.s}</span><span class="xs cy2" style="display:block;margin-top:4px">${o.m}</span></span>
+        </button>`).join('')}
+      </div>
+      ${!sent ? `<button class="btn pri mt12" data-act="send-print" ${Object.values(S.print).some(Boolean) ? '' : 'disabled'}>${ico('layers', 18)} Enviar para impressão</button>` : ''}
+    </div>
+    ${sent ? `<div class="card">
+      <div class="row between"><div class="lbl">Status da produção</div><span class="chip ${S.printStep >= 5 ? 'ok' : ''}">${S.printStep >= 5 ? ico('check', 12, 3) + ' concluído' : 'ao vivo'}</span></div>
+      <div class="tl mt16">
+        ${PRINT_STEPS.map((s, i) => {
+          const cls = i < S.printStep || (i === 5 && S.printStep === 5) ? 'done' : i === S.printStep ? 'cur' : '';
+          const time = i <= S.printStep ? `${hm(PRINT_BASE + s.m)} · hoje` : 'previsto ' + hm(PRINT_BASE + s.m);
+          return `<div class="st ${cls}"><div class="n">${cls === 'done' ? ico('check', 13, 3.5) : ''}</div><div class="grow"><div class="t">${s.t}</div><div class="s">${time}${i === 5 && cls === 'done' ? ' · Hospital Parceiro · Unidade Norte' : ''}</div>
+            ${i === 1 && cls === 'cur' ? `<div class="bar" aria-hidden="true"><i id="pbar" style="width:${S.printProgress * 100}%"></i></div><div class="xs cy2 mt4"><span id="ptxt">${Math.round(S.printProgress * 100)}%</span> · gabarito + modelo em resina</div>` : ''}
+          </div></div>`;
+        }).join('')}
+      </div>
+    </div>` : ''}
+    <div class="card">
+      <div class="row between"><div><h2>Kit da sala</h2><p class="xs muted mt4">Gerado pelo plano · só o necessário</p></div>
+        <div class="col" style="align-items:flex-end"><span class="big" id="avoided">${S.counted ? 34 : 0}</span><span class="lbl">itens evitados</span></div></div>
+      <div class="list mt12">
+        ${kit.map(k => `<div class="item"><div class="ibox ok" style="width:28px;height:28px;border-radius:9px">${ico('check', 14, 3)}</div><div class="grow"><div class="t">${k.t}</div><div class="s">${k.s}</div></div></div>`).join('')}
+      </div>
+      <p class="xs muted mt12">Kit convencional completo: ${34 + kit.length} itens · kit deste plano: ${kit.length} itens</p>
+    </div>
+    <div class="card">
+      <div class="row between"><h2>Caixa inteligente</h2>${b.done ? `<span class="chip ok">${ico('check', 12, 3)} registrado</span>` : b.running ? '<span class="chip">em sala</span>' : ''}</div>
+      <p class="xs muted mt4">Cada item é lido ao sair e ao voltar. Registro automático, sem conferência manual.</p>
+      <div class="boxes mt12">
+        <div class="bx"><div class="lbl">Estéril · saída</div>${b.items.filter(i => i.st === 'esteril').map(i => `<div class="pill">${i.n}</div>`).join('') || '<span class="empty">Caixa vazia</span>'}</div>
+        <div class="bx ret"><div class="lbl">Retorno · usado</div>${b.items.filter(i => i.st === 'retorno').map(i => `<div class="pill">${i.n}</div>`).join('') || '<span class="empty">Aguardando retorno</span>'}</div>
+      </div>
+      <div class="use-row mt8"><span class="lbl" style="margin-right:4px">Em uso</span>${b.items.filter(i => i.st === 'uso').map(i => `<span class="pill use ${b.missing && !b.resolved ? 'miss' : ''}">${i.n}</span>`).join('') || '<span class="empty">Nenhum item fora da caixa</span>'}</div>
+      ${b.missing && !b.resolved ? `<div class="alert mt12"><div class="ibox">${ico('alert', 18)}</div><div class="grow"><div style="font-size:14.5px;font-weight:600">1 item não retornou — conferir</div><div class="xs muted">Afastador de tecidos · saiu às 11:26</div></div><button class="btn sm sec" data-act="box-check">Conferir</button></div>` : ''}
+      ${b.log.length ? `<div class="sep"></div><div class="lbl">Registro automático</div><div class="log mt8">${b.log.map(l => `<div><time>${l.t}</time><span>${l.m}</span></div>`).join('')}</div>` : ''}
+      ${!b.done ? `<button class="btn sec mt16" data-act="sim-box" ${b.running ? 'disabled' : ''}>${ico('play', 18)} ${b.running ? 'Cirurgia em andamento…' : 'Simular uso em sala'}</button>` : ''}
+    </div>
+    ${S.surgery ? surgeryCard() : ''}
+    ${nextBtn('Próximo passo · Pós-operatório')}`;
+  },
+
+  posop() {
+    const w = S.week, r = REC[w];
+    const pts = PAIN.slice(0, w);
+    const X = i => 16 + i * (288 / 11), Y = v => 14 + (10 - v) * 7.6;
+    const path = pts.map((v, i) => `${i ? 'L' : 'M'}${X(i).toFixed(1)} ${Y(v).toFixed(1)}`).join(' ');
+    return `
+    <div class="head row" style="gap:14px"><div class="saude" aria-label="Saúde+">Saúde+</div><div><h1>Pós-operatório</h1><p class="small muted">Integração Saúde+ · <span class="cy2">conectada</span></p></div></div>
+    <div class="card">
+      <div class="row between"><div><div class="lbl">Recuperação · Helena</div><h2 class="mt4" style="font-size:22px">Semana ${w}</h2></div>
+        <div class="segs" role="group" aria-label="Semana">${[2, 6, 12].map(n => `<button aria-pressed="${n === w}" data-act="week:${n}">${n}</button>`).join('')}</div></div>
+      <div class="grid3 mt16">
+        <div class="stat"><span class="row" style="gap:6px;color:var(--cyan2)">${ico('load', 14)}<span class="lbl">Carga</span></span><b>${r.carga}%</b></div>
+        <div class="stat"><span class="row" style="gap:6px;color:var(--cyan2)">${ico('steps', 14)}<span class="lbl">Passos/dia</span></span><b>${fmtN(r.passos)}</b></div>
+        <div class="stat"><span class="row" style="gap:6px;color:var(--cyan2)">${ico('gauge', 14)}<span class="lbl">Dor</span></span><b>${r.dor}<span class="xs muted" style="font-weight:300">/10</span></b></div>
+      </div>
+      <div class="mt16 lbl">Dor (0–10) · evolução semanal</div>
+      <svg viewBox="0 0 320 110" width="100%" style="display:block;margin-top:6px" role="img" aria-label="Gráfico de linha da dor por semana: de ${PAIN[0]} na semana 1 para ${pts[pts.length - 1]} na semana ${w}">
+        <g stroke="rgba(255,255,255,.1)" stroke-width="1">${[0, 5, 10].map(v => `<path d="M16 ${Y(v)} H304"/>`).join('')}</g>
+        <g font-size="9" fill="#9D9D9C"><text x="310" y="${Y(10) + 3}" text-anchor="end">10</text><text x="310" y="${Y(5) + 3}" text-anchor="end">5</text><text x="310" y="${Y(0) + 3}" text-anchor="end">0</text></g>
+        <path d="${path}" fill="none" stroke="#009FE3" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        ${pts.map((v, i) => `<circle cx="${X(i).toFixed(1)}" cy="${Y(v).toFixed(1)}" r="${i === pts.length - 1 ? 5 : 3}" fill="${i === pts.length - 1 ? '#fff' : '#009FE3'}" ${i === pts.length - 1 ? 'stroke="#009FE3" stroke-width="2.5"' : ''}/>`).join('')}
+        <g font-size="9" fill="#9D9D9C">${[1, 4, 8, 12].map(n => `<text x="${X(n - 1).toFixed(1)}" y="106" text-anchor="middle">sem ${n}</text>`).join('')}</g>
+      </svg>
+    </div>
+    <div class="card">
+      <div class="lbl">Fontes de dados conectadas</div>
+      <div class="src mt12">
+        ${['Pulseira', 'Strava', 'Nike Run Club', 'Outros apps'].map(n => `<div><span class="dot"></span>${n}<span class="st">conectado</span></div>`).join('')}
+      </div>
+    </div>
+    <div class="card tight">
+      <div class="row" style="gap:10px;margin-bottom:10px"><div class="saude" style="width:34px;height:34px;font-size:9px;box-shadow:none">S+</div><div><div style="font-size:13.5px">Assistente virtual Saúde+</div><div class="xs muted">para Helena · hoje, 08:10</div></div></div>
+      <div class="bubble">${r.msg}</div>
+    </div>
+    <div class="card ${w === 12 ? 'hi' : ''} row" style="gap:14px">
+      <div class="ibox ${w === 12 ? 'ok' : 'cy'}" style="width:48px;height:48px;border-radius:16px">${ico('run', 26)}</div>
+      <div class="grow"><div class="lbl">${w === 12 ? 'Marco alcançado' : 'Marco final'}</div><div style="font-size:17px;font-weight:600;margin-top:2px">Semana 12 · voltou a correr</div></div>
+      ${w === 12 ? ico('checkc', 24) : ''}
+    </div>
+    <div class="foot">
+      <svg class="ring" width="72" height="72" viewBox="0 0 72 72" role="img" aria-label="Anel da jornada completo: acionamento, planejamento, impressão, cirurgia e recuperação">
+        <circle cx="36" cy="36" r="28" fill="none" stroke="rgba(255,255,255,.14)" stroke-width="2"/>
+        <circle cx="36" cy="36" r="28" fill="none" stroke="#009FE3" stroke-width="2.5" stroke-dasharray="176" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 36 36)" style="animation:none"/>
+        ${[0, 1, 2, 3, 4].map(i => { const a = -Math.PI / 2 + i * 2 * Math.PI / 5; return `<circle cx="${(36 + 28 * Math.cos(a)).toFixed(1)}" cy="${(36 + 28 * Math.sin(a)).toFixed(1)}" r="4" fill="#009FE3" stroke="#06102A" stroke-width="1.5"/>`; }).join('')}
+        <path d="M30 36.5l4 4 8-9" fill="none" stroke="#7FD3F7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <p>Cada cirurgia vira dado que melhora a próxima.</p>
+    </div>
+    <button class="btn ghost next" data-act="reset">${ico('refresh', 18)} Reiniciar demonstração</button>`;
+  },
+};
+
+function platesHTML() {
+  const sug = plateFor(S.angle);
+  return PLATES.map(p => `<button class="plate" role="radio" aria-checked="${S.implant === p.sz}" data-act="pick-plate:${p.sz}" ${S.implantConfirmed ? 'disabled' : ''}>
+    ${p.sz === sug ? '<span class="sug">Sugerido pelo plano</span>' : ''}
+    <span class="sz">${p.sz}</span>
+    <span class="grow"><span style="display:block;font-size:15px">Placa ${p.sz} · ${p.code}</span><span style="display:block;font-size:12.5px;color:var(--gray);margin-top:2px">${p.len} · ${p.screws}</span><span class="xs cy2" style="display:block;margin-top:3px">${p.range}</span></span>
+    ${S.implant === p.sz ? `<span class="cy">${ico('checkc', 22)}</span>` : ''}
+  </button>`).join('');
+}
+function surgeryCard() {
+  const pl = S.implant || 'M';
+  return `<div class="card hi">
+    <div class="row between"><span class="badge ok">${ico('check', 12, 3)} Cirurgia realizada</span><span class="xs muted">hoje · 10:32–11:34</span></div>
+    <h2 class="mt12" style="font-size:20px">1h02 · conforme o plano</h2>
+    <div class="mt12">
+      <div class="kv"><span class="muted">Ângulo planejado</span><span>${fmt1(S.angle)}°</span></div>
+      <div class="kv"><span class="muted">Ângulo executado</span><span>${fmt1(Math.max(0, S.angle - 0.2))}°</span></div>
+      <div class="kv"><span class="muted">Implante usado</span><span>= planejado · Placa ${pl}</span></div>
+      <div class="kv"><span class="muted">Consumo</span><span class="cy2">registrado sozinho</span></div>
+    </div>
+  </div>`;
+}
+
+/* ---------- render ---------- */
+function renderJourney() {
+  const st = stage();
+  $('#journey').innerHTML = `<div class="fill" style="width:calc((100% - 20% - 8px) * ${st / 4})"></div>` +
+    JOURNEY.map((n, i) => `<li class="${i <= st ? 'on' : ''} ${i === st ? 'cur' : ''}" ${i === st ? 'aria-current="step"' : ''}><i></i><span>${n}</span></li>`).join('');
+}
+function renderTabs() {
+  $('#tabs').innerHTML = TABS.map(t => `<button data-act="tab:${t.id}" ${S.tab === t.id ? 'aria-current="page"' : ''} aria-label="${t.l}">${ico(t.i, 22, 1.9)}<span>${t.l}</span></button>`).join('');
+}
+function render() {
+  renderJourney(); renderTabs();
+  const main = $('#screen');
+  const changed = lastTab !== S.tab;
+  const top = main.scrollTop;
+  main.innerHTML = `<div class="view ${changed ? 'anim' : ''}">${VIEWS[S.tab]()}</div>`;
+  main.scrollTop = changed ? 0 : top;
+  lastTab = S.tab;
+  afterRender();
+}
+function afterRender() {
+  const r = $('#angle');
+  if (r) r.addEventListener('input', () => { S.angle = parseFloat(r.value); r.style.setProperty('--p', `${S.angle / 15 * 100}%`); r.setAttribute('aria-valuetext', `${fmt1(S.angle)} graus`); updatePlan(); });
+  const av = $('#avoided');
+  if (av && !S.counted) { S.counted = true; countUp(av, 34, 1100); }
+}
+function updatePlan() {
+  const a = S.angle, g = geo(a);
+  if (S.simDone) S.simDone = false;
+  updateLimb(a, 0);
+  $('#angVal').textContent = `${fmt1(a)}°`;
+  $('#axisTxt').innerHTML = axisText(g.pct);
+  $('#mOpen').textContent = `${fmt1(g.open)} mm`;
+  $('#mFinal').textContent = finalTxt(a);
+  $('#mPlate').textContent = plateFor(a);
+  $('#mPct').textContent = `${Math.round(g.pct)}%`;
+  if (!S.implantConfirmed) $('#plates').innerHTML = platesHTML();
+}
+
+/* ---------- ações ---------- */
+function go(tab) {
+  if (tab === 'posop') S.postVisited = true;
+  S.tab = tab; render();
+}
+function nextStep() {
+  const order = TABS.map(t => t.id);
+  const i = order.indexOf(S.tab);
+  if (S.tab === 'casos' && !S.accepted) S.accepted = true;
+  if (S.tab === 'plano' && !S.implantConfirmed) { S.implant = S.implant || plateFor(S.angle); S.implantConfirmed = true; }
+  if (S.tab === 'impressao') { if (!S.printSent) { S.printSent = true; S.printStep = 5; S.printProgress = 1; } S.surgery = true; }
+  go(order[Math.min(i + 1, order.length - 1)]);
+}
+function simulate() {
+  if (S.simRunning) return;
+  S.simRunning = true; S.simDone = false; render();
+  const target = S.angle, D = 1300;
+  updateLimb(0, 0);
+  later(() => {
+    const t0 = performance.now();
+    const tick = () => {
+      const p = Math.min(1, (performance.now() - t0) / D), e = 1 - Math.pow(1 - p, 3);
+      const a = target * Math.min(1, e / 0.95), plate = p > 0.7 ? (p - 0.7) / 0.3 : 0;
+      const v = $('#angVal');
+      updateLimb(a, plate);
+      if (v) v.textContent = `${fmt1(a)}°`;
+      if (p < 1) requestAnimationFrame(tick);
+      else { S.simRunning = false; S.simDone = true; render(); toast('Simulação concluída · plano validado'); }
+    };
+    requestAnimationFrame(tick);
+  }, 350);
+}
+function startPrint() {
+  S.printSent = true; S.printStep = 0; S.printProgress = 0; render();
+  toast('Enviado ao Centro de Impressão Síntegra', 'layers');
+  const dur = [1800, 3200, 1800, 1800, 1900];
+  const step = () => {
+    const i = S.printStep;
+    if (i === 1) {
+      const t0 = performance.now();
+      const tick = () => {
+        const p = Math.min(1, (performance.now() - t0) / 3000); S.printProgress = p;
+        const bar = $('#pbar'), tx = $('#ptxt');
+        if (bar) bar.style.width = `${p * 100}%`; if (tx) tx.textContent = `${Math.round(p * 100)}%`;
+        if (p < 1 && S.printStep === 1) requestAnimationFrame(tick);
+      };
+      tick();
+    }
+    later(() => {
+      S.printStep = i + 1; render();
+      if (S.printStep < 5) step(); else toast('Material entregue no hospital', 'building');
+    }, dur[i]);
+  };
+  step();
+}
+function simBox() {
+  const b = S.box; if (b.running || b.done) return;
+  b.running = true; render();
+  const base = 10 * 60 + 32;
+  b.log.push({ t: hm(base), m: 'Caixa estéril aberta · sala 3' });
+  b.items.forEach((it, i) => {
+    later(() => { it.st = 'uso'; b.log.push({ t: hm(base + 4 + i * 18), m: `${it.n} saiu da caixa estéril` }); render(); }, 600 + i * 1500);
+    if (i < 3) later(() => { it.st = 'retorno'; b.log.push({ t: hm(base + 16 + i * 18), m: `${it.n} retornou` }); render(); }, 600 + i * 1500 + 1000);
+  });
+  later(() => {
+    b.running = false; b.done = true; b.missing = true; S.surgery = true;
+    b.log.push({ t: hm(base + 62), m: 'Fim da cirurgia · consumo registrado' });
+    render(); toast('Cirurgia registrada · 1h02', 'check');
+  }, 600 + 4 * 1500 + 500);
+}
+function act(a, el) {
+  const [k, v] = a.split(':');
+  switch (k) {
+    case 'tab': go(v); break;
+    case 'next': nextStep(); break;
+    case 'sheet-close': closeSheet(); break;
+    case 'accept': S.accepted = true; render(); toast('Caso aceito · em planejamento'); break;
+    case 'forward-case':
+      openSheet(`<div class="sh-h"><h2>Encaminhar para colega</h2><button class="x" data-act="sheet-close" aria-label="Fechar">${ico('close', 18)}</button></div><p class="small muted">O colega recebe o caso completo, com exames e prontuário.</p><div class="list mt12">
+        ${COLLEAGUES.map(c => `<button class="item" data-act="forward-to:${c.n}" style="width:100%;text-align:left"><div class="ibox">${ico('user', 18)}</div><div class="grow"><div class="t">${c.n}</div><div class="s">${c.s}</div></div>${ico('chev', 18)}</button>`).join('')}</div>`);
+      break;
+    case 'forward-to':
+      $('.sheet-panel').innerHTML = `<div class="grab"></div><div class="okmark">${ico('check', 34, 3)}</div><h2 style="text-align:center">Solicitação enviada</h2><p class="small muted mt8" style="text-align:center">${v} recebe o caso agora. Você segue como responsável até a aceitação.</p>`;
+      later(closeSheet, 1700); break;
+    case 'laudo': {
+      const l = LAUDOS.find(x => x.id === v);
+      openSheet(`<div class="sh-h"><span class="lbl">Laudo</span><button class="x" data-act="sheet-close" aria-label="Fechar">${ico('close', 18)}</button></div><h2>${l.t}</h2><p class="xs muted mt4">${l.meta}</p><div id="laudoBody" class="skel mt12"><i></i><i></i><i style="width:85%"></i><i></i><i style="width:55%"></i></div>`);
+      later(() => { const b = $('#laudoBody'); if (b) { b.className = 'laudo-text mt8'; b.innerHTML = l.text.map(p => `<p>${p}</p>`).join(''); } }, 650);
+      break; }
+    case 'fwd-laudo':
+      openSheet(`<div class="sh-h"><h2>Encaminhar laudo</h2><button class="x" data-act="sheet-close" aria-label="Fechar">${ico('close', 18)}</button></div><p class="small muted">Os 3 laudos e os cuidados específicos seguem juntos.</p><div class="list mt12">
+        ${FWD_TARGETS.map(t => `<button class="item" data-act="fwd-laudo-to:${t.t}" style="width:100%;text-align:left"><div class="ibox cy">${ico(t.i, 18)}</div><div class="grow"><div class="t">${t.t}</div><div class="s">${t.s}</div></div>${ico('chev', 18)}</button>`).join('')}</div>`);
+      break;
+    case 'fwd-laudo-to':
+      if (!S.forwarded.includes(v)) S.forwarded.push(v);
+      $('.sheet-panel').innerHTML = `<div class="grab"></div><div class="okmark">${ico('check', 34, 3)}</div><h2 style="text-align:center">Laudo encaminhado</h2><p class="small muted mt8" style="text-align:center">para ${v} · 3 laudos anexados · registrado no prontuário</p>`;
+      later(() => { closeSheet(); render(); }, 1600); break;
+    case 'simulate': simulate(); break;
+    case 'pick-plate': S.implant = v; $('#plates').innerHTML = platesHTML(); $('[data-act="confirm-implant"]')?.removeAttribute('disabled'); break;
+    case 'confirm-implant': if (!S.implant) return; S.implantConfirmed = true; render(); toast('Implante especificado no plano'); break;
+    case 'toggle-print': S.print[v] = !S.print[v]; render(); break;
+    case 'send-print': startPrint(); break;
+    case 'sim-box': simBox(); break;
+    case 'box-check':
+      S.box.resolved = true; S.box.items[3].st = 'retorno';
+      S.box.log.push({ t: '11:48', m: 'Afastador de tecidos localizado e devolvido' }); render(); toast('Item conferido · caixa fechada'); break;
+    case 'week': S.week = +v; render(); break;
+    case 'reset':
+      timers.forEach(clearTimeout); timers = []; S = initial(); lastTab = null; closeSheet(); render(); break;
+  }
+}
+$('#app').addEventListener('click', e => { const el = e.target.closest('[data-act]'); if (el && !el.hasAttribute('disabled')) act(el.dataset.act, el); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSheet(); });
+render();
+</script>
+</body>
+</html>
