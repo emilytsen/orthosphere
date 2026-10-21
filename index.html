@@ -192,6 +192,14 @@ input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;bac
 .bx{border:1px dashed var(--line);border-radius:18px;padding:12px;min-height:118px;display:flex;flex-direction:column;gap:6px}
 .bx.ret{border-color:rgba(0,159,227,.45)}
 .bx .lbl{font-size:10px;margin-bottom:2px}
+.bx{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px!important;align-content:start;padding:10px!important}
+.bx .lbl,.bx .empty{grid-column:1/-1}
+.itm{display:flex;flex-direction:column;align-items:center;gap:2px;padding:5px 3px 4px;border-radius:12px;background:rgba(255,255,255,.07);border:1px solid var(--line2);animation:in .35s var(--ease) both;min-width:0}
+.itm svg{display:block;max-width:100%;height:auto}
+.itm span{font-size:10px;line-height:1.15;color:rgba(255,255,255,.85);text-align:center;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.itm.use{background:rgba(0,159,227,.18);border-color:rgba(0,159,227,.55);width:76px}
+.itm.use.miss{background:rgba(255,196,120,.1);border-color:rgba(255,196,120,.6)}
+.itm.use.miss span{color:#FFD9A8}
 .pill{font-size:12px;padding:7px 10px;border-radius:12px;background:rgba(255,255,255,.08);border:1px solid var(--line2);animation:in .35s var(--ease) both;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pill.use{background:rgba(0,159,227,.18);border-color:rgba(0,159,227,.5);color:var(--cyan2)}
 .pill.miss{border-color:rgba(255,196,120,.6);color:#FFD9A8}
@@ -368,7 +376,34 @@ const PRINT_STEPS = [
   { t: 'Entregue no hospital', i: 'building', m: 453 },
 ];
 const PRINT_BASE = 9 * 60 + 12;
-const BOX_ITEMS = ['Placa M · STO-TM-02', 'Parafusos Ø 5,0 (6)', 'Gabarito de corte', 'Afastador de tecidos'];
+const BOX_ITEMS = [
+  { n: 'Placa M · STO-TM-02', short: 'Placa M', k: 'plate' },
+  { n: 'Parafusos Ø 5,0 (6)', short: 'Parafusos', k: 'screws' },
+  { n: 'Gabarito de corte', short: 'Gabarito', k: 'guide' },
+  { n: 'Afastador de tecidos', short: 'Afastador', k: 'retractor' },
+];
+/* ilustrações vetoriais dos materiais (viewBox 72x44) */
+const ITEM_ART = {
+  plate: `<defs><linearGradient id="gPl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f1f5f9"/><stop offset=".5" stop-color="#b9c6d3"/><stop offset="1" stop-color="#6c7c8e"/></linearGradient></defs>
+    <path d="M5 16C5 11 9 9 14 9H58C64 9 67 12 67 16V28C67 32 64 35 58 35H14C9 35 5 33 5 28Z" fill="url(#gPl)" stroke="#009FE3" stroke-width="1"/>
+    <path d="M9 13H62" stroke="#fff" stroke-opacity=".7" stroke-width="1.5" stroke-linecap="round"/>
+    <g fill="#1d2a3a" stroke="#fff" stroke-opacity=".5" stroke-width=".6"><circle cx="15" cy="22" r="3.2"/><circle cx="28" cy="22" r="3.2"/><circle cx="41" cy="22" r="3.2"/><circle cx="54" cy="22" r="3.2"/></g>`,
+  screws: `<defs><linearGradient id="gSc" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#eef2f6"/><stop offset=".55" stop-color="#aab7c4"/><stop offset="1" stop-color="#6c7c8e"/></linearGradient></defs>
+    ${[10, 22, 34].map(y => `<g transform="translate(0 ${y - 22})"><rect x="6" y="17" width="9" height="10" rx="2.5" fill="url(#gSc)" stroke="#009FE3" stroke-width=".8"/><path d="M9 22H12" stroke="#1d2a3a" stroke-width="1.3" stroke-linecap="round"/><path d="M15 19.5H60L66 22L60 24.5H15Z" fill="url(#gSc)" stroke="#009FE3" stroke-width=".8" stroke-linejoin="round"/><g stroke="#51606f" stroke-width=".9">${[20, 24, 28, 32, 36, 40, 44, 48, 52, 56].map(x => `<path d="M${x} 19.6L${x + 2.4} 24.4"/>`).join('')}</g></g>`).join('')}`,
+  guide: `<path d="M6 34C6 18 18 8 36 8C54 8 66 18 66 34L56 34C56 25 48 18 36 18C24 18 16 25 16 34Z" fill="#7FD3F7" fill-opacity=".42" stroke="#7FD3F7" stroke-width="1.3" stroke-linejoin="round"/>
+    <path d="M10 22C14 15 23 11 36 11" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="1.3" stroke-linecap="round"/>
+    <rect x="31" y="6" width="10" height="16" rx="3" fill="#06102A" fill-opacity=".55" stroke="#7FD3F7" stroke-width="1"/>
+    <path d="M36 8V20" stroke="#009FE3" stroke-width="1.6" stroke-linecap="round"/>
+    <g fill="#06102A" fill-opacity=".6" stroke="#7FD3F7" stroke-width="1"><circle cx="18" cy="29" r="2.8"/><circle cx="54" cy="29" r="2.8"/></g>
+    <path d="M4 38H68" stroke="#009FE3" stroke-opacity=".5" stroke-width="1" stroke-dasharray="2 3"/>`,
+  retractor: `<defs><linearGradient id="gRt" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#eef2f6"/><stop offset=".6" stop-color="#a7b4c1"/><stop offset="1" stop-color="#66778a"/></linearGradient></defs>
+    <rect x="4" y="7" width="40" height="7" rx="3.5" fill="url(#gRt)" stroke="#009FE3" stroke-width=".8"/>
+    <g stroke="#51606f" stroke-width=".9">${[10, 14, 18, 22, 26, 30, 34].map(x => `<path d="M${x} 8L${x} 13"/>`).join('')}</g>
+    <path d="M44 8H50C56 8 60 12 60 18V37C60 39 59 40 57 40H55C53 40 52 39 52 37V20C52 17 51 16 48 16H44Z" fill="url(#gRt)" stroke="#009FE3" stroke-width=".8" stroke-linejoin="round"/>
+    <path d="M56 21V36" stroke="#fff" stroke-opacity=".6" stroke-width="1.2" stroke-linecap="round"/>`,
+};
+const itemArt = (k, w = 52) => `<svg viewBox="0 0 72 44" width="${w}" height="${Math.round(w * 44 / 72)}" role="img" aria-label="Ilustração: ${BOX_ITEMS.find(i => i.k === k).short}" focusable="false">${ITEM_ART[k]}</svg>`;
+const itemTile = (i, extra = '') => `<div class="itm ${extra}" title="${i.n}">${itemArt(i.k)}<span>${i.short}</span></div>`;
 const REC = {
   2: { carga: 25, passos: 1150, dor: 6, msg: 'Carga parcial liberada. Dor controlada sem dipirona. Dado enviado ao seu médico.' },
   6: { carga: 75, passos: 4820, dor: 2, msg: 'Evolução dentro do esperado. Dado enviado ao seu médico.' },
@@ -380,7 +415,7 @@ const PAIN = [7, 6, 5, 4, 3, 2, 2, 1, 1, 1, 0, 0];
 const initial = () => ({
   tab: 'casos', accepted: false, angle: 8, implant: null, implantConfirmed: false, simDone: false, simRunning: false,
   print: { gabarito: true, modelo: true, instrumental: false }, printSent: false, printStep: -1, printProgress: 0,
-  box: { items: BOX_ITEMS.map(n => ({ n, st: 'esteril' })), log: [], running: false, done: false, missing: false, resolved: false },
+  box: { items: BOX_ITEMS.map(it => ({ ...it, st: 'esteril' })), log: [], running: false, done: false, missing: false, resolved: false },
   surgery: false, postVisited: false, week: 6, forwarded: [], counted: false,
 });
 let S = initial();
@@ -671,10 +706,10 @@ const VIEWS = {
       <div class="row between"><h2>Caixa inteligente</h2>${b.done ? `<span class="chip ok">${ico('check', 12, 3)} registrado</span>` : b.running ? '<span class="chip">em sala</span>' : ''}</div>
       <p class="xs muted mt4">Cada item é lido ao sair e ao voltar. Registro automático, sem conferência manual.</p>
       <div class="boxes mt12">
-        <div class="bx"><div class="lbl">Estéril · saída</div>${b.items.filter(i => i.st === 'esteril').map(i => `<div class="pill">${i.n}</div>`).join('') || '<span class="empty">Caixa vazia</span>'}</div>
-        <div class="bx ret"><div class="lbl">Retorno · usado</div>${b.items.filter(i => i.st === 'retorno').map(i => `<div class="pill">${i.n}</div>`).join('') || '<span class="empty">Aguardando retorno</span>'}</div>
+        <div class="bx"><div class="lbl">Estéril · saída</div>${b.items.filter(i => i.st === 'esteril').map(i => itemTile(i)).join('') || '<span class="empty">Caixa vazia</span>'}</div>
+        <div class="bx ret"><div class="lbl">Retorno · usado</div>${b.items.filter(i => i.st === 'retorno').map(i => itemTile(i)).join('') || '<span class="empty">Aguardando retorno</span>'}</div>
       </div>
-      <div class="use-row mt8"><span class="lbl" style="margin-right:4px">Em uso</span>${b.items.filter(i => i.st === 'uso').map(i => `<span class="pill use ${b.missing && !b.resolved ? 'miss' : ''}">${i.n}</span>`).join('') || '<span class="empty">Nenhum item fora da caixa</span>'}</div>
+      <div class="use-row mt8"><span class="lbl" style="margin-right:4px">Em uso</span>${b.items.filter(i => i.st === 'uso').map(i => itemTile(i, 'use ' + (b.missing && !b.resolved ? 'miss' : ''))).join('') || '<span class="empty">Nenhum item fora da caixa</span>'}</div>
       ${b.missing && !b.resolved ? `<div class="alert mt12"><div class="ibox">${ico('alert', 18)}</div><div class="grow"><div style="font-size:14.5px;font-weight:600">1 item não retornou — conferir</div><div class="xs muted">Afastador de tecidos · saiu às 11:26</div></div><button class="btn sm sec" data-act="box-check">Conferir</button></div>` : ''}
       ${b.log.length ? `<div class="sep"></div><div class="lbl">Registro automático</div><div class="log mt8">${b.log.map(l => `<div><time>${l.t}</time><span>${l.m}</span></div>`).join('')}</div>` : ''}
       ${!b.done ? `<button class="btn sec mt16" data-act="sim-box" ${b.running ? 'disabled' : ''}>${ico('play', 18)} ${b.running ? 'Cirurgia em andamento…' : 'Simular uso em sala'}</button>` : ''}
