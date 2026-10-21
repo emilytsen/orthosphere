@@ -354,7 +354,7 @@ const PLATES = [
 ];
 const PRINT_OPTS = [
   { id: 'gabarito', t: 'Gabarito de corte e perfuração', s: 'Guia o ângulo planejado e desvia de artérias e nervos', m: 'Resina biocompatível · 1h50' },
-  { id: 'modelo', t: 'Modelo anatômico', s: 'Réplica em escala real para estudo e conversa com a paciente', m: 'Polímero · 3h10' },
+  { id: 'modelo', t: 'Modelo anatômico', s: 'Réplica em escala real para estudo e conversa com o paciente', m: 'Polímero · 3h10' },
   { id: 'instrumental', t: 'Instrumental específico', s: 'Opcional · afastador adaptado à anatomia do caso', m: 'Sob demanda' },
 ];
 const PRINT_STEPS = [
@@ -386,7 +386,7 @@ let timers = [];
 let lastTab = null;
 const later = (fn, ms) => { const id = setTimeout(fn, ms); timers.push(id); return id; };
 const stage = () => S.postVisited ? 4 : S.surgery ? 3 : S.printSent ? 2 : S.accepted ? 1 : 0;
-const caseStatus = () => S.postVisited ? 'Em recuperação' : S.surgery ? 'Operada' : S.printSent ? 'Material em produção' : S.accepted ? 'Em planejamento' : 'Novo caso';
+const caseStatus = () => S.postVisited ? 'Em recuperação' : S.surgery ? 'Operado' : S.printSent ? 'Material em produção' : S.accepted ? 'Em planejamento' : 'Novo caso';
 
 /* ---------- geometria do membro (esquemática) ---------- */
 /* k = exagero visual da rotação (desenho esquemático); as medidas usam o ângulo real */
@@ -517,14 +517,14 @@ const VIEWS = {
     <div class="head row between"><h1>Casos</h1><span class="chip dim">${ico('calendar', 14)} Hoje, 20/10</span></div>
     ${!S.accepted ? `<div class="notif" role="alert">
       <div class="ibox cy">${ico('bell', 20)}</div>
-      <div class="grow"><div class="lbl">Novo caso</div><div style="font-size:14.5px;margin-top:2px">Dr. Rafael Moura, você foi acionado</div></div>
+      <div class="grow"><div class="lbl">Novo caso</div><div style="font-size:14.5px;margin-top:2px">Doctor Bone, você foi acionado</div></div>
     </div>` : ''}
     <div class="card appear ${S.accepted ? '' : 'd1'}">
       <div class="row between">
         <span class="badge ${S.accepted ? 'ok' : ''}">${S.accepted ? ico('check', 12, 3) : ''}${st}</span>
         <span class="xs muted">Prioridade: eletiva</span>
       </div>
-      <h2 class="mt12" style="font-size:21px">Helena Souza, 67 anos</h2>
+      <h2 class="mt12" style="font-size:21px">Mr Bolt, 67 anos</h2>
       <p class="small muted mt4">Trauma: queda em casa · 12/10/2026</p>
       <div class="sub mt12">
         <div class="lbl">Diagnóstico preliminar</div>
@@ -555,7 +555,7 @@ const VIEWS = {
   paciente() {
     const imc = (72 / (1.62 * 1.62));
     return `
-    <div class="head row between"><div><h1>Helena Souza</h1><p class="small muted">67 anos · prontuário integrado</p></div><span class="badge">${caseStatus()}</span></div>
+    <div class="head row between"><div><h1>Mr Bolt</h1><p class="small muted">67 anos · prontuário integrado</p></div><span class="badge">${caseStatus()}</span></div>
     <div class="card warn tight row" style="gap:12px">
       <div class="ibox" style="background:rgba(255,196,120,.15);color:#FFD9A8">${ico('alert', 20)}</div>
       <div class="grow"><div class="lbl" style="color:#FFD9A8">Alergia</div><div style="font-size:16px;font-weight:600">Dipirona</div><div class="xs muted">Reação cutânea grave registrada em 2017</div></div>
@@ -689,7 +689,7 @@ const VIEWS = {
     return `
     <div class="head row" style="gap:14px"><div class="saude" aria-label="Saúde+">Saúde+</div><div><h1>Pós-operatório</h1><p class="small muted">Integração Saúde+ · <span class="cy2">conectada</span></p></div></div>
     <div class="card">
-      <div class="row between"><div><div class="lbl">Recuperação · Helena</div><h2 class="mt4" style="font-size:22px">Semana ${w}</h2></div>
+      <div class="row between"><div><div class="lbl">Recuperação · Mr Bolt</div><h2 class="mt4" style="font-size:22px">Semana ${w}</h2></div>
         <div class="segs" role="group" aria-label="Semana">${[2, 6, 12].map(n => `<button aria-pressed="${n === w}" data-act="week:${n}">${n}</button>`).join('')}</div></div>
       <div class="grid3 mt16">
         <div class="stat"><span class="row" style="gap:6px;color:var(--cyan2)">${ico('load', 14)}<span class="lbl">Carga</span></span><b>${r.carga}%</b></div>
@@ -712,7 +712,7 @@ const VIEWS = {
       </div>
     </div>
     <div class="card tight">
-      <div class="row" style="gap:10px;margin-bottom:10px"><div class="saude" style="width:34px;height:34px;font-size:9px;box-shadow:none">S+</div><div><div style="font-size:13.5px">Assistente virtual Saúde+</div><div class="xs muted">para Helena · hoje, 08:10</div></div></div>
+      <div class="row" style="gap:10px;margin-bottom:10px"><div class="saude" style="width:34px;height:34px;font-size:9px;box-shadow:none">S+</div><div><div style="font-size:13.5px">Assistente virtual Saúde+</div><div class="xs muted">para Mr Bolt · hoje, 08:10</div></div></div>
       <div class="bubble">${r.msg}</div>
     </div>
     <div class="card ${w === 12 ? 'hi' : ''} row" style="gap:14px">
