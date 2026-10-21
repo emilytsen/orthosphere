@@ -618,7 +618,7 @@ const VIEWS = {
     </div>
     <div class="card">
       <div class="row between"><h2>Escolha do implante</h2>${S.implantConfirmed ? `<span class="badge ok">${ico('check', 12, 3)} no plano</span>` : ''}</div>
-      <p class="small muted mt4">Placa de Osteotomia de Tíbia Síntegra · titânio</p>
+      <p class="small muted mt4">Placa de Osteotomia de Tíbia · titânio</p>
       <div id="plates" class="mt16">${platesHTML()}</div>
       ${S.implantConfirmed
         ? `<div class="sub mt12 row" style="gap:10px"><div class="ibox ok" style="width:30px;height:30px;border-radius:10px">${ico('check', 16, 3)}</div><div><div style="font-size:14.5px">Implante especificado no plano</div><div class="xs muted">Placa ${S.implant} · ${PLATES.find(p => p.sz === S.implant).code} · parafusos compatíveis</div></div></div>`
@@ -636,7 +636,7 @@ const VIEWS = {
       ...(S.print.instrumental ? [{ t: 'Instrumental específico', s: 'impresso para este caso' }] : []),
     ];
     return `
-    <div class="head"><h1>Impressão 3D</h1><p class="small muted">Produzido a partir do plano · Centro Síntegra</p></div>
+    <div class="head"><h1>Impressão 3D</h1><p class="small muted">Produzido a partir do plano</p></div>
     <div class="card">
       <div class="lbl">O que imprimir</div>
       <div class="mt8">
@@ -830,7 +830,7 @@ function simulate() {
 }
 function startPrint() {
   S.printSent = true; S.printStep = 0; S.printProgress = 0; render();
-  toast('Enviado ao Centro de Impressão Síntegra', 'layers');
+  toast('Enviado ao Centro de Impressão', 'layers');
   const dur = [1800, 3200, 1800, 1800, 1900];
   const step = () => {
     const i = S.printStep;

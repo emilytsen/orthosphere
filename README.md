@@ -1,6 +1,6 @@
 # Orthosphere · protótipo da visão do médico
 
-Protótipo navegável de front-end da **Orthosphere**, plataforma da Síntegra (Grupo Jacto) que integra a jornada do paciente ortopédico, do trauma à recuperação. Feito para demonstração em pitch. **Todos os dados são fictícios** e não há back-end.
+Protótipo navegável de front-end da **Orthosphere**, plataforma que integra a jornada do paciente ortopédico, do trauma à recuperação. Feito para demonstração em pitch. **Todos os dados são fictícios** e não há back-end.
 
 ## Telas
 1. **Casos** · acionamento do médico e aceite do caso
